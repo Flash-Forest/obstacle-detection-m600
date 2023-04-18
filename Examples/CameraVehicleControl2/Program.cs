@@ -68,7 +68,7 @@ namespace CameraVehicleControl
                        v.Vehicle.Name, v.Vehicle.Id, v.Vehicle.Type.ToString()));
             }
             Vehicle vehicle = task.Value.Objects.FirstOrDefault().Vehicle;
-            Vehicle selectedVehicle = list.Objects.Where(v => v.Vehicle.Id == 2).Select(v => v.Vehicle).FirstOrDefault();
+            Vehicle selectedVehicle = list.Objects.Where(v => v.Vehicle.Id == 1).Select(v => v.Vehicle).FirstOrDefault();
             List<Vehicle> vehicles = new List<Vehicle>();
             vehicles.Add(selectedVehicle);
             
@@ -111,7 +111,7 @@ namespace CameraVehicleControl
 
             //Read serial input from telemetry module
 
-            SerialPort mySerialPort = new SerialPort("COM13")
+            SerialPort mySerialPort = new SerialPort("COM6")
             {
                 BaudRate = 57600,
                 Parity = Parity.None,
@@ -124,28 +124,27 @@ namespace CameraVehicleControl
 
             //mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
             try
-            {   
-                while (mySerialPort.IsOpen == false) {
+            {
+                while (mySerialPort.IsOpen == false)
+                {
                     try
                     {
                         mySerialPort.Open();
                         System.Console.WriteLine(string.Format("Serial Connection Successful to {0}", mySerialPort.PortName));
                         break;
                     }
-                    catch (Exception ex) 
-                    { 
-                        Console.WriteLine(ex); 
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
                     }
                 }
-                
 
-                while(true)
+                while (true)
                 {
                     string line = mySerialPort.ReadExisting();
-                    if (line.StartsWith("1"))
+                    if (line == "1")
                     {
-                        string dist = line.Substring(1);
-                        Console.WriteLine($"Obstacle detected at {dist}m. Switch to Manual Mode.");
+                        Console.WriteLine("Switch to Manual Mode");
                         var future1 = messageExecutor.Submit<SendCommandResponse>(request1);
                         future1.Wait();
                     }
